@@ -1,5 +1,5 @@
-<object width="100" height="100">
-    <param name="movie" value="file.swf">
-    <embed src="file.swf" width="100" height="100">
+<object width="1200" height="675">
+    <param name="movie" value="https://github.com/ScTiger1311/Games/raw/master/Platformer.swf">
+    <embed src="https://github.com/ScTiger1311/Games/raw/master/Platformer.swf" width="1200" height="675">
     </embed>
 </object>
