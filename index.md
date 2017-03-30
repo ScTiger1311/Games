@@ -15,16 +15,11 @@ Syntax highlighted code block
 ## Header 2
 ### Header 3
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
+<object width="100" height="100">
+    <param name="movie" value="file.swf">
+    <embed src="file.swf" width="100" height="100">
+    </embed>
+</object>
 
 For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
