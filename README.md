@@ -1,4 +1,4 @@
-Play the game here: https://sctiger1311.github.io/Games/
+Play the game here: https://sctiger1311.github.io/Skeleton-Sprint/
 or here: https://nanopi.ml/games/platformer
 
 # Legal Stuff
