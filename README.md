@@ -1,5 +1,6 @@
 Play the game here: https://sctiger1311.github.io/Skeleton-Sprint/
-or here: https://nanopi.ml/games/platformer
+
+or here: https://www.nanopi.ml/games/platformer
 
 # Legal Stuff
 This game was made in Flash Pro CC 2015 by Ethan "ScTiger" Rafael. All art assets and code are original. You may redistribute this game as you please as long as you give appropriate credit (just a link to this repo is fine), and only if you are not charging for the game. You may modify, dissect, or otherwise study the code as long as you mention that it is modified. You may not play this game if you don't believe skeletons have feelings too. 
