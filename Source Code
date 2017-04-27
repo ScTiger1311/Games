@@ -1,11 +1,17 @@
 import flash.display.Sprite;
 import flash.geom.Point;
 import flash.events.MouseEvent;
+import flash.events.Event;
+import flash.media.Sound;
 
 splashScreenGroup.skullButtonStart.addEventListener(MouseEvent.CLICK,startGame);
+nameInputField.addEventListener(TextEvent.TEXT_INPUT, changeName);
+
+var userName:String = "Default";
 
 var time:Number = 0;
 var timerPaused:Boolean = true;
+var overlayOn:Boolean = false;
 
 var leftKeyDown:Boolean = false;
 var upKeyDown:Boolean = false;
@@ -55,23 +61,27 @@ var IK:String = 'Item_Key';
 var Z0:String = 'SecretExit';
 var D0:String = 'Decoration_Scaffold';
 var D1:String = 'Decoration_Sconce';
+var A0:String = 'Mask_Circle';
 var blockHolder:Sprite = new Sprite();
 var playerHolder:Sprite = new Sprite();
 var decorHolder:Sprite = new Sprite();
-var lightHolder:Sprite = new Sprite();
+var overlayHolder:Sprite = new Sprite();
+var maskHolder:Sprite = new Sprite();
 var uiHolder:Sprite = new Sprite();
 var splashHolder:Sprite = new Sprite();
 //load order lower down = in front
 addChild( decorHolder );
 addChild( blockHolder );
 addChild( playerHolder );
-addChild( lightHolder );
+addChild( overlayHolder );
+addChild( maskHolder );
 addChild( timerField );
 addChild( keyCountField );
 addChild( uiHolder );
 addChild( splashHolder );
 //end load order
 splashHolder.addChild( splashScreenGroup );
+
 var main:Character = new Character();
 main.name = "main";
 playerHolder.addChild( main );
@@ -88,19 +98,19 @@ lvlArray[ 0 ] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
 //nameOfArray[ level# ][ row ] = [ all types in each row ]
 lvlArray[0][ 0 ] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0]
 lvlArray[0][ 1 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,B0]
-lvlArray[0][ 2 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,B0]
+lvlArray[0][ 2 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D1,00,00,00,00,00,00,00,D0,00,00,B0]
 lvlArray[0][ 3 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,00,00,00,00,00,D0,00,00,B0]
 lvlArray[0][ 4 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,00,00,00,00,D0,00,00,B0]
 lvlArray[0][ 5 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,00,00,WR,D0,00,00,B0]
 lvlArray[0][ 6 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,00,WR,D0,00,00,B0]
-lvlArray[0][ 7 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,WR,D0,00,00,B0]
-lvlArray[0][ 8 ] = [B0,00,00,D1,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,WR,WR,WR,D0,00,00,B0]
-lvlArray[0][ 9 ] = [00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,00]
+lvlArray[0][ 7 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,WR,D0,D1,00,B0]
+lvlArray[0][ 8 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,WR,WR,WR,D0,00,00,B0]
+lvlArray[0][ 9 ] = [00,00,00,00,00,00,00,00,D1,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,00]
 lvlArray[0][ 10] = [00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,E0,00,00]
-lvlArray[0][ 11] = [B0,B0,00,00,00,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0,B0,B0,B0,B0]
+lvlArray[0][ 11] = [B0,B0,00,00,00,B0,B0,00,00,00,00,00,00,00,00,00,00,D1,00,00,00,00,00,00,00,00,00,B0,B0,B0,B0,B0]
 lvlArray[0][ 12] = [B0,00,00,00,00,D0,D0,00,00,00,00,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,B0]
 lvlArray[0][ 13] = [B0,00,00,00,00,D0,D0,00,00,00,00,B0,B0,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,B0]
-lvlArray[0][ 14] = [00,00,00,00,00,D0,D0,00,00,00,00,B0,B0,B0,B0,B0,B0,00,00,00,00,00,D1,00,00,00,00,00,D0,00,00,00]
+lvlArray[0][ 14] = [00,00,00,00,00,D0,D0,00,00,00,00,B0,B0,B0,B0,B0,B0,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,00]
 lvlArray[0][ 15] = [00,00,00,00,00,D0,D0,00,00,00,00,B0,B0,B0,B0,B0,B0,B0,B0,00,00,00,00,00,00,00,00,00,D0,00,00,00]
 lvlArray[0][ 16] = [00,00,00,00,00,D0,D0,00,00,00,00,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,00,00,00,00,00,00,D0,X0,00,00]
 lvlArray[0][ 17] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0]
@@ -263,15 +273,15 @@ lvlArray[8][ 4 ] = [B0,WR,00,X0,00,00,B0,00,00,00,B0,00,00,00,00,00,00,00,00,00,
 lvlArray[8][ 5 ] = [B0,T0,B0,B0,B0,WR,B0,00,00,00,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,B0,00,00,B0,B0]
 lvlArray[8][ 6 ] = [B0,B0,B0,B0,B0,S0,B0,00,00,00,B0,B0,00,00,00,B0,00,00,00,00,00,00,00,B0,B0,B0,B0,B0,00,00,00,B0]
 lvlArray[8][ 7 ] = [B0,00,00,00,B0,00,B0,00,00,00,00,B0,00,00,00,D0,00,00,00,00,00,00,00,B0,B0,B0,B0,B0,B0,00,00,B0]
-lvlArray[8][ 8 ] = [B0,00,00,00,B0,00,00,00,00,00,00,B0,00,00,00,D0,00,00,00,00,00,P0,00,B0,00,00,00,B0,00,00,00,B0]
-lvlArray[8][ 9 ] = [B0,00,E0,00,B0,WR,B0,B0,B0,B0,00,B0,00,00,00,D0,00,00,B0,00,00,00,00,B0,00,00,IK,B0,00,D1,00,B0]
-lvlArray[8][ 10] = [B0,B0,B0,B0,00,S0,00,00,D0,00,00,B0,00,00,00,D0,00,00,D0,00,00,00,00,B0,00,B0,B0,B0,00,00,B0,B0]
-lvlArray[8][ 11] = [B0,B0,00,00,00,B0,00,00,D0,00,00,B0,00,00,00,D0,00,00,D0,00,00,00,00,B0,00,00,00,00,00,00,00,B0]
-lvlArray[8][ 12] = [B0,B0,00,00,00,B0,00,00,D0,00,00,D0,00,00,00,D0,00,00,D0,00,00,00,00,B0,00,00,B0,B0,B0,00,00,B0]
-lvlArray[8][ 13] = [B0,B0,00,00,00,B0,00,00,D0,00,00,D0,00,00,B0,D0,00,00,D0,00,00,00,00,B0,B0,00,D0,00,D0,00,00,B0]
-lvlArray[8][ 14] = [B0,B0,00,00,00,B0,00,00,D0,00,00,D0,00,00,D0,D0,00,00,D0,00,00,00,00,B0,00,00,D0,00,D0,00,00,B0]
-lvlArray[8][ 15] = [WR,B0,00,00,00,B0,00,00,D0,00,00,D0,00,00,D0,D0,00,00,D0,00,00,00,00,B0,00,00,D0,00,D0,00,00,B0]
-lvlArray[8][ 16] = [T0,00,00,00,00,B0,00,00,D0,00,00,D0,00,00,D0,D0,00,00,D0,00,00,00,00,B0,00,00,D0,00,D0,00,00,00]
+lvlArray[8][ 8 ] = [B0,00,E0,00,B0,00,00,00,00,00,00,B0,00,00,00,D0,00,00,00,00,00,P0,00,B0,00,00,00,B0,00,00,00,B0]
+lvlArray[8][ 9 ] = [B0,B0,B0,B0,B0,WR,B0,B0,B0,B0,00,B0,00,00,00,D0,00,00,B0,00,00,00,00,B0,00,00,IK,B0,00,D1,00,B0]
+lvlArray[8][ 10] = [B0,D0,00,00,00,S0,00,00,D0,00,00,B0,00,00,00,D0,00,00,D0,00,00,00,00,B0,00,B0,B0,B0,00,00,B0,B0]
+lvlArray[8][ 11] = [B0,D0,00,00,00,B0,00,00,D0,00,00,B0,00,00,00,D0,00,00,D0,00,00,00,00,B0,00,00,00,00,00,00,00,B0]
+lvlArray[8][ 12] = [B0,D0,00,00,00,B0,00,00,D0,00,00,D0,00,00,00,D0,00,00,D0,00,00,00,00,B0,00,00,B0,B0,B0,00,00,B0]
+lvlArray[8][ 13] = [B0,D0,00,00,00,B0,00,00,D0,00,00,D0,00,00,B0,D0,00,00,D0,00,00,00,00,B0,B0,00,D0,00,D0,00,00,B0]
+lvlArray[8][ 14] = [B0,D0,00,00,00,B0,00,00,D0,00,00,D0,00,00,D0,D0,00,00,D0,00,00,00,00,B0,00,00,D0,00,D0,00,00,B0]
+lvlArray[8][ 15] = [WR,B0,00,00,00,00,00,00,D0,00,00,D0,00,00,D0,D0,00,00,D0,00,00,00,00,B0,00,00,D0,00,D0,00,00,B0]
+lvlArray[8][ 16] = [T0,00,00,00,B0,B0,00,00,D0,00,00,D0,00,00,D0,D0,00,00,D0,00,00,00,00,B0,00,00,D0,00,D0,00,00,00]
 lvlArray[8][ 17] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0]
 
 lvlArray[ 9 ] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
@@ -290,9 +300,9 @@ lvlArray[9][ 10] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,
 lvlArray[9][ 11] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
 lvlArray[9][ 12] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
 lvlArray[9][ 13] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0,B0,B0,B0,00,00,00,00,00,B0]
-lvlArray[9][ 14] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0,B0,B0,B0,B0,B0,B0,00,00,00,00,B0]
-lvlArray[9][ 15] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0,B0,B0,00,00,00,B0,00,00,00,00,B0]
-lvlArray[9][ 16] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,X0,00,00,00,00,00,BK,BK,BK,00,E0,00,B0,00,00,00,00,B0]
+lvlArray[9][ 14] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0,B0,B0,B0,B0,B0,00,00,00,00,B0]
+lvlArray[9][ 15] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0,B0,00,00,00,B0,00,00,00,00,B0]
+lvlArray[9][ 16] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,X0,00,00,00,00,00,00,BK,00,00,E0,00,B0,00,00,00,00,B0]
 lvlArray[9][ 17] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0]
 
 lvlArray[ 10 ] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
@@ -313,7 +323,7 @@ lvlArray[10][ 12] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00
 lvlArray[10][ 13] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
 lvlArray[10][ 14] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
 lvlArray[10][ 15] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[10][ 16] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
+lvlArray[10][ 16] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,E0,B0]
 lvlArray[10][ 17] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0]
 
 lvlArray[ 11 ] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
@@ -334,28 +344,28 @@ lvlArray[11][ 12] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00
 lvlArray[11][ 13] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
 lvlArray[11][ 14] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
 lvlArray[11][ 15] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[11][ 16] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
+lvlArray[11][ 16] = [B0,E0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
 lvlArray[11][ 17] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0]
 
 lvlArray[ 100 ] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
 //nameOfArray[ level# ][ row ] = [ all types in each row ]
 lvlArray[100][ 0 ] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0]
-lvlArray[100][ 1 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 2 ] = [B0,00,00,00,B0,B0,00,B0,B0,00,00,B0,00,B0,B0,00,00,B0,B0,00,B0,B0,B0,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 3 ] = [B0,00,00,00,B0,00,00,B0,00,00,B0,00,00,B0,00,B0,00,B0,00,00,00,B0,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 4 ] = [B0,00,00,00,B0,B0,00,B0,B0,00,B0,00,00,B0,B0,00,00,B0,B0,00,00,B0,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 5 ] = [B0,00,00,00,00,B0,00,B0,00,00,B0,00,00,B0,00,B0,00,B0,00,00,00,B0,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 6 ] = [B0,00,00,00,B0,B0,00,B0,B0,00,00,B0,00,B0,00,B0,00,B0,B0,00,00,B0,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 7 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 8 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 9 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 10] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 11] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 12] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 13] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 14] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 15] = [B0,00,00,00,X0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
-lvlArray[100][ 16] = [B0,00,00,B0,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,E0,00,00,B0]
+lvlArray[100][ 1 ] = [B0,A0,00,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
+lvlArray[100][ 2 ] = [B0,E0,00,BK,X0,00,00,00,00,00,00,00,P0,00,00,00,00,00,00,P0,00,00,00,00,00,00,00,00,00,00,00,B0]
+lvlArray[100][ 3 ] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,00,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0]
+lvlArray[100][ 4 ] = [B0,B0,B0,00,00,B0,00,00,B0,00,00,B0,00,00,B0,00,00,B0,00,00,00,00,B0,00,00,B0,00,00,00,B0,00,B0]
+lvlArray[100][ 5 ] = [00,IK,B0,00,00,B0,B0,B0,B0,00,00,B0,00,00,B0,B0,00,B0,B0,B0,B0,B0,B0,00,00,B0,B0,B0,B0,B0,00,00]
+lvlArray[100][ 6 ] = [B0,B0,B0,B0,B0,B0,00,00,B0,B0,B0,B0,00,00,B0,00,00,B0,00,B0,00,00,B0,B0,B0,B0,00,B0,00,B0,B0,B0]
+lvlArray[100][ 7 ] = [00,B0,B0,B0,00,00,00,B0,00,00,00,00,00,00,B0,00,00,B0,00,B0,B0,B0,00,00,B0,00,00,00,00,00,00,00]
+lvlArray[100][ 8 ] = [00,00,00,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,00,B0,B0,00,00,00,00,00,B0,B0,B0,B0,B0,B0,B0,B0]
+lvlArray[100][ 9 ] = [00,00,00,00,00,B0,00,00,00,B0,00,00,B0,00,B0,00,B0,B0,00,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,00]
+lvlArray[100][ 10] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,B0,00,00,B0,00,00,00,B0,00,00,00,B0,00,00,00,B0,B0,B0]
+lvlArray[100][ 11] = [B0,00,00,B0,00,00,B0,00,00,B0,00,00,B0,00,B0,00,00,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,00,IK,B0,00,B0]
+lvlArray[100][ 12] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,00,B0,00,B0,00,00,B0,00,B0,00,00,00,B0,00,B0,00,B0,B0,B0,00,B0]
+lvlArray[100][ 13] = [B0,00,00,B0,00,00,00,B0,00,00,00,00,B0,00,B0,B0,00,B0,00,B0,B0,B0,B0,B0,00,B0,00,B0,00,00,00,00]
+lvlArray[100][ 14] = [00,00,00,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,B0,00,00,B0,00,00,00,B0,00,00,00,00,00,B0,00,B0,00,00]
+lvlArray[100][ 15] = [00,B0,B0,B0,00,00,00,00,00,00,00,00,B0,00,B0,00,00,B0,B0,B0,B0,B0,B0,B0,00,B0,B0,B0,B0,B0,B0,00]
+lvlArray[100][ 16] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0]
 lvlArray[100][ 17] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0]
 mcMain.addEventListener(Event.ENTER_FRAME, moveChar);
 function moveChar(event:Event):void{
@@ -471,6 +481,7 @@ function moveChar(event:Event):void{
 			if( currentLevel == lastLevel )
 			{
 				timerPaused = true;
+				nameInputField.visible = true;
 			}
 			destroyLevel();
 			currentLevel = currentLevelTemp;
@@ -522,6 +533,7 @@ function moveChar(event:Event):void{
 		}
 		if( mcMain.hitTestObject( hitBlock ) == true && hitBlock + "123" == "[object Switch]123" && testMainOnSwitch() == true )//activate the switch
 		{
+			trace( "hi" );
 			var rebuildQuery:Boolean = false;
 			pointsToRebuild = new Array();
 			if( lvlArrayTemp[ currentLevel ][(int)( Math.floor( hitBlock.y / 25 ) - 1)][( int )( Math.floor( hitBlock.x / 25 ))]  == WR )
@@ -548,6 +560,7 @@ function moveChar(event:Event):void{
 			}
 			if( rebuildQuery == true )
 			{
+				trace( "ran rebuild" );
 				rebuildLevelFromTemp();
 			}
 		}
@@ -594,6 +607,11 @@ function moveChar(event:Event):void{
 				mainOnGround = false;
 			}
 		}
+	}
+	if( overlayOn == true )
+	{
+		overlayHolder.getChildByName("playerCircleMask").x = main.x + main.width / 2 - overlayHolder.getChildByName("playerCircleMask").width / 2;
+		overlayHolder.getChildByName("playerCircleMask").y = main.y + main.height / 2 - overlayHolder.getChildByName("playerCircleMask").height / 2;
 	}
 	testMainOnSwitch();
 }	
@@ -674,8 +692,8 @@ function checkKeysDown(event:KeyboardEvent):void{
 	}
 	if( event.keyCode == 82 )
 	{
-		destroyLevel();
-		createLvl();
+		//destroyLevel();
+		//createLvl();
 	}
 }
 //this listener will listen for keys being released
@@ -774,15 +792,15 @@ function destroyLevel():void
 	{
 		decorHolder.removeChildren( 0, decorHolder.numChildren - 1 );
 	}
-	if( lightHolder.numChildren > 0 )
+	if( overlayHolder.numChildren > 0 )
 	{
-		lightHolder.removeChildren( 0, lightHolder.numChildren - 1 );
+		overlayHolder.removeChildren( 0, overlayHolder.numChildren - 1 );
 	}
+	overlayOn = false;
 }
 function createLvl():void
 {
-	amtOfKeys = 0;
-	hasBurrow = false;
+	hasBurrow = false; //removes the player's burrow powerup
 	updateUI();
 	lvlArrayTemp = lvlArray;
 	indexToRebuild = new Array();
@@ -868,9 +886,12 @@ function createLvl():void
 				newSconce.y = i * 25;
 				decorHolder.addChild( newSconce );
 				var newLightCircle:Light_Circle = new Light_Circle();
+				newLightCircle.blendMode = BlendMode.ERASE;
+				overlayHolder.blendMode = BlendMode.LAYER;
 				newLightCircle.x = j * 25;
 				newLightCircle.y = i * 25;
-				lightHolder.addChild( newLightCircle );
+				overlayHolder.addChild( newLightCircle );
+				newLightCircle.cacheAsBitmap = true;
 			}
 			else if( lvlArray[ currentLevel ][ i ][ j ] == T0 )
 			{
@@ -893,6 +914,19 @@ function createLvl():void
 				blockHolder.addChild( newTogglePhase );
 				//adds the block to an array so it can toggle its state
 				indexToRebuild.push( blockHolder.getChildIndex( blockHolder.getChildByName("ToggleBlockPhase" + i + "x" + j) ) );
+			}
+			else if( lvlArray[ currentLevel ][ i ][ j ] == A0 )
+			{
+				var newCircleMask:Mask_Circle = new  Mask_Circle();
+				newCircleMask.name = "playerCircleMask";
+				newCircleMask.blendMode = BlendMode.ERASE;
+				overlayHolder.blendMode = BlendMode.LAYER;
+				overlayHolder.addChild( blackMask );
+				overlayHolder.addChild( newCircleMask );
+				blackMask.x = 0;
+				blackMask.y = 0;
+				newCircleMask.cacheAsBitmap = true;
+				overlayOn = true;
 			}
 		}
 	}	
@@ -944,6 +978,11 @@ function startGame(event:MouseEvent)
 	splashHolder.visible = false;
 	splashScreenGroup.visible = false;
 	timerPaused = false;
+	nameInputField.visible = false;
+}
+function changeName(event:TextEvent):void
+{
+	trace( "changed name" );
 }
 //build the UI
 var uiBurrowItem:PowerUpBurrow = new PowerUpBurrow();
@@ -957,3 +996,5 @@ uiHolder.addChild( uiKeyItem );
 //running the createlvl funciton
 main.stop();
 createLvl();
+var music:SpookySkeletonsSound = new SpookySkeletonsSound();
+music.play(0,50); // this will repeat the sound 2 times.
