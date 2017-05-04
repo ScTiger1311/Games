@@ -1,3 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>JavaScript Alert</h2>
+
+<script>
+function myFunction() {
+    alert("I am an alert box!");
+}
+myFunction();
+</script>
+
+</body>
+</html>
+
 <object type="application/x-shockwave-flash" 
   data="Platformer_60fps.swf" 
   width="800" height="450">
