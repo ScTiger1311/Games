@@ -1,7 +1,8 @@
 <script>
-function myFunction() {
+  function myFunction() 
+  {
     alert("I am an alert box!");
-}
+  }
 myFunction();
 </script>
 
