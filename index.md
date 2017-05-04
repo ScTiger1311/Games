@@ -2,7 +2,7 @@
 <script>
   function myFunction() 
   {
-    alert("I am an alert box!");
+    alert("Thank you for playing Skeleton Sprint! I am looking into making a live scoreboard.");
   }
 </script>
 <object type="application/x-shockwave-flash" 
