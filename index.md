@@ -1,8 +1,8 @@
 <body>
 <script>
-  function myFunction() 
+  function myFunction(name, time) 
   {
-    alert("Thank you for playing Skeleton Sprint! I am looking into making a live scoreboard.");
+    alert("Thank you " + name + " for playing Skeleton Sprint! I am looking into making a live scoreboard. Your time was " + time + " seconds");
   }
 </script>
 <object type="application/x-shockwave-flash" 
