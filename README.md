@@ -10,6 +10,6 @@ This game was made in Flash Pro CC 2015 by Ethan "ScTiger" Rafael. All art asset
 Instrumental cover of "Spooky Scary Skeletons" - https://www.youtube.com/watch?v=gVM9pb__c6M
 
 # Developer Notes
-Got an idea for a level or mechanic? Submit a level/concept sketch of your idea to me.
+Got an idea for a level or mechanic? Use the level builder and sumbit the exported .txt file to me.
 
 Don't give up! skeleton
