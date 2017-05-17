@@ -9,7 +9,11 @@ This game was made in Flash Pro CC 2015 by Ethan "ScTiger" Rafael. All art asset
 
 Instrumental cover of "Spooky Scary Skeletons" - https://www.youtube.com/watch?v=gVM9pb__c6M
 
+# Special Thanks
+Nathaniel Daniel for hosting the game on https://www.nanopi.ml/games/platformer, making the live scoreboard and level creator
+
 # Developer Notes
 Got an idea for a level or mechanic? Use the level builder and sumbit the exported .txt file to me.
 
 Don't give up! skeleton
+
