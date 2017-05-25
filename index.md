@@ -1,9 +1,5 @@
 <body>
 <script>
-  function myFunction(name, time) 
-  {
-    alert("Thank you " + name + " for playing Skeleton Sprint! I am looking into making a live scoreboard. Your time was " + time + " seconds");
-  }
 </script>
 <object type="application/x-shockwave-flash" 
   data="Platformer_60fps.swf" 
